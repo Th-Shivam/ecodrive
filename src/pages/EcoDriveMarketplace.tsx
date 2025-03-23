@@ -4,9 +4,8 @@ import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   BoltIcon, 
-  CurrencyDollarIcon, 
+  CurrencyDollarIcon,
   ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
   PlusIcon,
   MinusIcon
 } from '@heroicons/react/24/outline';
@@ -256,15 +255,24 @@ const EcoDriveMarketplace = () => {
             <h2 className="text-lg font-semibold mb-4">Market Statistics</h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Total Listings</span>
+                <div className="flex items-center gap-2">
+                  <ArrowTrendingUpIcon className="w-5 h-5 text-blue-500" />
+                  <span className="text-gray-600">Total Listings</span>
+                </div>
                 <span className="font-medium">{marketStats.totalListings}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Average Price</span>
+                <div className="flex items-center gap-2">
+                  <CurrencyDollarIcon className="w-5 h-5 text-green-500" />
+                  <span className="text-gray-600">Average Price</span>
+                </div>
                 <span className="font-medium">${marketStats.averagePrice.toFixed(2)}/kWh</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Total Energy Available</span>
+                <div className="flex items-center gap-2">
+                  <BoltIcon className="w-5 h-5 text-yellow-500" />
+                  <span className="text-gray-600">Total Energy Available</span>
+                </div>
                 <span className="font-medium">{marketStats.totalEnergy} kWh</span>
               </div>
             </div>
