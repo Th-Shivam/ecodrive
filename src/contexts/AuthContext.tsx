@@ -4,7 +4,8 @@ import {
   User,
   signInWithPopup,
   signOut as firebaseSignOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  GoogleAuthProvider
 } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 
@@ -39,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async () => {
     try {
-      await signInWithPopup(auth, new googleProvider);
+      await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error('Error signing in:', error);
       throw error;

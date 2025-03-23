@@ -22,7 +22,7 @@ console.log('Firebase Config:', {
 const app = initializeApp(firebaseConfig);
 export const auth: Auth = getAuth(app);
 export const db: Firestore = getFirestore(app);
-export const googleProvider = new GoogleAuthProvider();
+export const googleProvider: GoogleAuthProvider = new GoogleAuthProvider();
 
 // Add scopes for profile and email
 googleProvider.addScope('profile');
