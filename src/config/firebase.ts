@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
+import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -23,7 +23,6 @@ let auth: Auth;
 let db: Firestore;
 // @ts-ignore - Analytics is not critical for core functionality
 let analytics;
-let googleProvider: GoogleAuthProvider;
 
 // Initialize Firebase
 try {
@@ -34,7 +33,6 @@ try {
   auth = getAuth(app);
   db = getFirestore(app);
   analytics = getAnalytics(app);
-  googleProvider = new GoogleAuthProvider();
 
   // Enable offline persistence
   enableIndexedDbPersistence(db).catch((err) => {
@@ -45,9 +43,6 @@ try {
     }
   });
 
-  // Add scopes for Google provider
-  googleProvider.addScope('profile');
-  googleProvider.addScope('email');
 } catch (error) {
   console.error('Error initializing Firebase:', error);
   throw error;
@@ -60,4 +55,4 @@ if (import.meta.env.DEV) {
   });
 }
 
-export { auth, db, googleProvider, analytics }; 
+export { auth, db, analytics }; 

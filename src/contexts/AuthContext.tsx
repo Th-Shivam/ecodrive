@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider
 } from 'firebase/auth';
-import { auth, googleProvider } from '../config/firebase';
+import { auth } from '../config/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -17,16 +17,23 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Create and configure Google Auth Provider
+function createGoogleAuthProvider(): GoogleAuthProvider {
+  const provider = new GoogleAuthProvider();
+  provider.addScope('profile');
+  provider.addScope('email');
+  return provider;
+}
+
+// Initialize the provider
+const googleProvider = createGoogleAuthProvider();
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Ensure we have access to the profile picture
-        googleProvider.addScope('profile');
-      }
       setUser(user);
       setLoading(false);
     });
@@ -36,9 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      // Add scopes for profile and email
-      googleProvider.addScope('profile');
-      googleProvider.addScope('email');
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error('Error signing in with Google:', error);
