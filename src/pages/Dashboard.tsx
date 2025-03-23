@@ -102,6 +102,28 @@ const Dashboard = () => {
     setError(null);
   };
 
+  const calculateEcoScore = (data: DrivingData): number => {
+    if (data.speed.length === 0) return 0;
+
+    // Calculate average speed score (penalize speeds over 100 km/h)
+    const avgSpeed = data.speed.reduce((a, b) => a + b, 0) / data.speed.length;
+    const speedScore = Math.max(0, 100 - (avgSpeed - 60) * 0.5);
+
+    // Calculate acceleration score (penalize harsh acceleration)
+    const avgAcceleration = data.acceleration.reduce((a, b) => a + Math.abs(b), 0) / data.acceleration.length;
+    const accelerationScore = Math.max(0, 100 - avgAcceleration * 10);
+
+    // Calculate braking score (penalize harsh braking)
+    const avgBraking = data.braking.reduce((a, b) => a + Math.abs(b), 0) / data.braking.length;
+    const brakingScore = Math.max(0, 100 - avgBraking * 10);
+
+    // Calculate final score (weighted average)
+    const finalScore = (speedScore * 0.4 + accelerationScore * 0.3 + brakingScore * 0.3);
+    
+    // Round to nearest integer and ensure it's between 0 and 100
+    return Math.min(100, Math.max(0, Math.round(finalScore)));
+  };
+
   const analyzeDriving = async () => {
     if (drivingData.speed.length === 0) {
       setError('Please add at least one measurement');
@@ -112,25 +134,9 @@ const Dashboard = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8000/analyze-driving', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...drivingData,
-          timestamp: new Date().toISOString(),
-          trip_id: `trip_${Date.now()}`
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to analyze driving data');
-      }
-
-      const data = await response.json();
-      setEcoScore(data.eco_score);
-    // @ts-ignore - Generic error handling is sufficient here
+      // Calculate eco-score locally
+      const score = calculateEcoScore(drivingData);
+      setEcoScore(score);
     } catch (err) {
       setError('Failed to analyze driving data. Please try again.');
     } finally {

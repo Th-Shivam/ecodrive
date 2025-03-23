@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
@@ -14,45 +14,28 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// List of authorized domains for authentication
+const authorizedDomains = [
+  'localhost',
+  'ecodrive-git-main-shivam-s-projects-387f222a.vercel.app'
+];
+
+// Check if current domain is authorized
+const currentDomain = window.location.hostname;
+if (!authorizedDomains.includes(currentDomain)) {
+  console.warn(`Warning: ${currentDomain} is not in the list of authorized domains for Firebase Authentication. 
+    Please add it to the Firebase Console -> Authentication -> Settings -> Authorized domains`);
+}
+
 console.log('Firebase Config:', {
   ...firebaseConfig,
   apiKey: '***' // Hide API key in logs
 });
 
-let auth: Auth;
-let db: Firestore;
-// @ts-ignore - Analytics is not critical for core functionality
-let analytics;
-
 // Initialize Firebase
-try {
-  console.log('Initializing Firebase with project:', firebaseConfig.projectId);
-  const app = initializeApp(firebaseConfig);
-
-  // Initialize services
-  auth = getAuth(app);
-  db = getFirestore(app);
-  analytics = getAnalytics(app);
-
-  // Enable offline persistence
-  enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-    } else if (err.code === 'unimplemented') {
-      console.warn('The current browser does not support persistence.');
-    }
-  });
-
-} catch (error) {
-  console.error('Error initializing Firebase:', error);
-  throw error;
-}
-
-// Connect to Firestore emulator in development
-if (import.meta.env.DEV) {
-  import('firebase/firestore').then(({ connectFirestoreEmulator }) => {
-    connectFirestoreEmulator(db, 'localhost', 8080);
-  });
-}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const analytics = getAnalytics(app);
 
 export { auth, db, analytics }; 

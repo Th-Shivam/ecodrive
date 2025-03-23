@@ -4,13 +4,15 @@ import {
   signInWithPopup,
   signOut,
   onAuthStateChanged,
-  GoogleAuthProvider
+  GoogleAuthProvider,
+  AuthError
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  error: string | null;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -31,30 +33,49 @@ const googleProvider = createGoogleAuthProvider();
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
+    try {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+      });
 
-    return unsubscribe;
+      return unsubscribe;
+    } catch (err) {
+      console.error('Error in auth state change:', err);
+      setError('Failed to initialize authentication');
+      setLoading(false);
+    }
   }, []);
 
   const signInWithGoogle = async () => {
     try {
+      setError(null);
+      setLoading(true);
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error('Error signing in with Google:', error);
+      if ((error as AuthError)?.code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized for sign-in. Please contact the administrator.');
+      } else {
+        setError('Failed to sign in with Google. Please try again.');
+      }
+      setLoading(false);
       throw error;
     }
   };
 
   const logout = async () => {
     try {
+      setError(null);
+      setLoading(true);
       await signOut(auth);
     } catch (error) {
       console.error('Error signing out:', error);
+      setError('Failed to sign out. Please try again.');
+      setLoading(false);
       throw error;
     }
   };
@@ -62,13 +83,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
+    error,
     signInWithGoogle,
     logout
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
