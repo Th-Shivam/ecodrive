@@ -23,8 +23,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AppContent() {
-  const { user } = useAuth();
-
   return (
     <div>
       <Navbar />

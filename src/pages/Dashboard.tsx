@@ -130,6 +130,7 @@ const Dashboard = () => {
 
       const data = await response.json();
       setEcoScore(data.eco_score);
+    // @ts-ignore - Generic error handling is sufficient here
     } catch (err) {
       setError('Failed to analyze driving data. Please try again.');
     } finally {

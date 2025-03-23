@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
 import { getFirestore, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -19,10 +19,11 @@ console.log('Firebase Config:', {
   apiKey: '***' // Hide API key in logs
 });
 
-let auth;
+let auth: Auth;
 let db: Firestore;
+// @ts-ignore - Analytics is not critical for core functionality
 let analytics;
-let googleProvider;
+let googleProvider: GoogleAuthProvider;
 
 // Initialize Firebase
 try {

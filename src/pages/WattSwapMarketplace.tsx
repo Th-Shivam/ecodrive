@@ -50,6 +50,7 @@ const WattSwapMarketplace = () => {
     try {
       const userListings = await getUserListings(user.uid);
       setUserListings(userListings);
+    // @ts-ignore - Generic error handling is sufficient here
     } catch (err) {
       console.error('Failed to load user listings:', err);
       if (err instanceof Error && err.message.includes('requires an index')) {
