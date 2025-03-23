@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
@@ -19,38 +19,14 @@ console.log('Firebase Config:', {
   apiKey: '***' // Hide API key in logs
 });
 
-let auth;
-let db: Firestore;
-let analytics;
-let googleProvider;
+const app = initializeApp(firebaseConfig);
+export const auth: Auth = getAuth(app);
+export const db: Firestore = getFirestore(app);
+export const googleProvider = new GoogleAuthProvider();
 
-// Initialize Firebase
-try {
-  console.log('Initializing Firebase with project:', firebaseConfig.projectId);
-  const app = initializeApp(firebaseConfig);
-
-  // Initialize services
-  auth = getAuth(app);
-  db = getFirestore(app);
-  analytics = getAnalytics(app);
-  googleProvider = new GoogleAuthProvider();
-
-  // Enable offline persistence
-  enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-    } else if (err.code === 'unimplemented') {
-      console.warn('The current browser does not support persistence.');
-    }
-  });
-
-  // Add scopes for Google provider
-  googleProvider.addScope('profile');
-  googleProvider.addScope('email');
-} catch (error) {
-  console.error('Error initializing Firebase:', error);
-  throw error;
-}
+// Add scopes for profile and email
+googleProvider.addScope('profile');
+googleProvider.addScope('email');
 
 // Connect to Firestore emulator in development
 if (import.meta.env.DEV) {
@@ -59,4 +35,10 @@ if (import.meta.env.DEV) {
   });
 }
 
-export { auth, db, googleProvider, analytics }; 
+// Initialize analytics only in production
+let analytics;
+if (import.meta.env.PROD) {
+  analytics = getAnalytics(app);
+}
+
+export { analytics }; 
