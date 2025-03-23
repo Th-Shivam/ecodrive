@@ -1,21 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { 
-  Auth,
-  User,
-  signInWithPopup,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  GoogleAuthProvider
-} from 'firebase/auth';
-import { auth, googleProvider } from '../config/firebase';
-
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  isAuthenticated: boolean;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-}
+import { User, signInWithPopup, signOut } from 'firebase/auth';
+import { services, googleProvider } from '../config/firebase';
+import type { AuthContextType } from '../types/firebase';
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -30,7 +16,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = services.auth.onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
     });
@@ -38,34 +24,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const signIn = async () => {
+  const signInHandler = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithPopup(services.auth, googleProvider);
     } catch (error) {
       console.error('Error signing in:', error);
       throw error;
     }
   };
 
-  const signOut = async () => {
+  const signOutHandler = async () => {
     try {
-      await firebaseSignOut(auth);
+      await signOut(services.auth);
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
     }
   };
 
+  const value: AuthContextType = {
+    user,
+    loading,
+    isAuthenticated: !!user,
+    signIn: signInHandler,
+    signOut: signOutHandler
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        isAuthenticated: !!user,
-        signIn,
-        signOut
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
