@@ -1,30 +1,27 @@
-# EcoDrive - Sustainable Energy Trading Platform
+# EcoDrive - Sustainable Driving Companion
 
-EcoDrive is a modern web application that enables users to trade excess energy with other users in a peer-to-peer marketplace. Built with React, TypeScript, and Firebase.
+EcoDrive is a React.js application that helps users track their driving efficiency, analyze their driving patterns, and participate in an energy credit marketplace.
 
 ## Features
 
-- 🔐 Google Authentication
-- 📊 Real-time Dashboard
-- 💰 Energy Trading Marketplace
-- 📈 Performance Analytics
-- 📱 Responsive Design
-- 🔄 Real-time Updates
+- User authentication with Firebase
+- Real-time dashboard with driving statistics
+- Detailed driving analysis and recommendations
+- WattSwap marketplace for energy credits
+- Responsive design with Tailwind CSS
 
-## Tech Stack
+## Prerequisites
 
-- React + TypeScript
-- Vite
-- Firebase (Authentication, Firestore)
-- TailwindCSS
-- Heroicons
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- Firebase account and project
 
-## Getting Started
+## Setup
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ecodrive.git
-cd ecodrive
+git clone <repository-url>
+cd eco-drive
 ```
 
 2. Install dependencies:
@@ -32,30 +29,39 @@ cd ecodrive
 npm install
 ```
 
-3. Create a `.env` file in the root directory with your Firebase configuration:
-```env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-```
+3. Create a Firebase project and update the configuration:
+   - Go to the Firebase Console
+   - Create a new project
+   - Enable Authentication and Firestore
+   - Copy your Firebase configuration
+   - Update the configuration in `src/config/firebase.ts`
 
 4. Start the development server:
 ```bash
 npm run dev
 ```
 
-5. Build for production:
-```bash
-npm run build
+5. Open your browser and navigate to `http://localhost:5173`
+
+## Project Structure
+
+```
+src/
+├── components/     # Reusable UI components
+├── pages/         # Page components
+├── config/        # Configuration files
+├── assets/        # Static assets
+└── App.tsx        # Main application component
 ```
 
-## Deployment
+## Technologies Used
 
-This project is configured for deployment on Vercel. Simply connect your GitHub repository to Vercel and it will automatically deploy your application.
+- React.js
+- TypeScript
+- Tailwind CSS
+- Firebase (Authentication & Firestore)
+- React Router
+- Heroicons
 
 ## Contributing
 
@@ -67,4 +73,4 @@ This project is configured for deployment on Vercel. Simply connect your GitHub 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
