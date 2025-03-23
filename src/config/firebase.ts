@@ -2,9 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
-import type { FirebaseConfig, FirebaseServices } from '../types/firebase';
 
-const firebaseConfig: FirebaseConfig = {
+const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
@@ -14,31 +13,24 @@ const firebaseConfig: FirebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-console.log('Firebase Config:', {
-  ...firebaseConfig,
-  apiKey: '***' // Hide API key in logs
-});
-
 const app = initializeApp(firebaseConfig);
-
-const services: FirebaseServices = {
-  auth: getAuth(app),
-  db: getFirestore(app)
-};
-
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
+
+// Add scopes for profile and email
 googleProvider.addScope('profile');
 googleProvider.addScope('email');
 
 // Connect to Firestore emulator in development
 if (import.meta.env.DEV) {
   import('firebase/firestore').then(({ connectFirestoreEmulator }) => {
-    connectFirestoreEmulator(services.db, 'localhost', 8080);
+    connectFirestoreEmulator(db, 'localhost', 8080);
   });
 }
 
 // Initialize analytics only in production
 const analytics = import.meta.env.PROD ? getAnalytics(app) : null;
 
-export { services, analytics };
+export { analytics };
 export default app; 

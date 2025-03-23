@@ -1,7 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, signInWithPopup, signOut } from 'firebase/auth';
-import { services, googleProvider } from '../config/firebase';
-import type { AuthContextType } from '../types/firebase';
+import { User, signInWithPopup, signOut, getAuth } from 'firebase/auth';
+import { auth, googleProvider } from '../config/firebase';
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  isAuthenticated: boolean;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -14,19 +21,20 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const authInstance = getAuth();
 
   useEffect(() => {
-    const unsubscribe = services.auth.onAuthStateChanged((user) => {
+    const unsubscribe = authInstance.onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [authInstance]);
 
   const signInHandler = async () => {
     try {
-      await signInWithPopup(services.auth, googleProvider);
+      await signInWithPopup(authInstance, googleProvider);
     } catch (error) {
       console.error('Error signing in:', error);
       throw error;
@@ -35,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOutHandler = async () => {
     try {
-      await signOut(services.auth);
+      await signOut(authInstance);
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
